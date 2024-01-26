@@ -1,0 +1,6 @@
+@IntroWebAPI.Normal_HostAddress = http://localhost:5041
+
+GET {{IntroWebAPI.Normal_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

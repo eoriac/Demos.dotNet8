@@ -1,5 +1,8 @@
 ﻿
 
+using System.Collections.Generic;
+using System.IO;
+
 internal class Program
 {
     private static void Main(string[] args)
@@ -52,11 +55,71 @@ internal class Program
         System.Console.WriteLine(personEmployee);
 
 
-        IEmployee ipersonEmployee = new Employee("Madrid", "Pepe", "Microsoft");
+        //IEmployee ipersonEmployee = new Employee("Madrid", "Pepe", "Microsoft");
+
+        IEmployee ipersonEmployee = new DummyClass();
 
         System.Console.WriteLine(ipersonEmployee.GetPayroll());
 
+        var genericObject = new GenericSample<Employee>();
+
+        var values = new List<Person>();
+
+        var length = values.Count;
+
+        for (int i = 0; i < length; i++)
+        {
+            System.Console.WriteLine(values[i].Name);
+        }
+
+        // Tamaño predefinido
+        int[] ints = new int[5];
+
+        //
+        int[] ints2 = new int[] {4, 5, 6};
+
+        var values2 = (ICollection<Person>) values;        
+        
+        foreach (var item in values2)
+        {
+            System.Console.WriteLine(item);
+        }
+
+        if (values is IEmployee)
+        {
+            System.Console.WriteLine("values is IEmployee");
+        }
+
+        var operatorAs = values as IEmployee;
+
+        System.Console.WriteLine(" sdfsdf ");
+        System.Console.WriteLine(operatorAs?.GetPayroll());
+        System.Console.WriteLine(" sdfsdfsdf");
+
+        int age1 = 2;
+
+        _ = int.TryParse("34", out age1);
+
+        System.Console.WriteLine(age1);
+
+        _ = double.TryParse("36,4", out double age2);
+
+        System.Console.WriteLine(age2);
+
+
+        var fecha = DateTime.Now;
+
+        System.Console.WriteLine(fecha);
+
+        var _24FromNow = fecha.AddHours(24);
+
+        System.Console.WriteLine(_24FromNow);
+
+        System.Console.WriteLine(_24FromNow.ToString("yyyy/M/d H:m"));
+         
     }
+
+
 
 
 }
@@ -123,6 +186,24 @@ public class Employee : Person, IEmployee
     public override string ToString()
     {
         return base.ToString() + $" {Company}";
+    }
+}
+
+class DummyClass : IEmployee
+{
+    public double GetPayroll()
+    {
+        return 0;
+    }
+}
+
+public class GenericSample<T> where T : Person, IEmployee
+{
+    public T GetReturnObjectT { get; set; }
+
+    public string GetAverage(T objectToCalculate){
+        var result = $"{objectToCalculate.GetPayroll()} {objectToCalculate.Age}";
+        return result;
     }
 }
 

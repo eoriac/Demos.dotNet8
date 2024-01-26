@@ -3,6 +3,13 @@
 using System.Collections.Generic;
 using System.IO;
 
+using Newtonsoft.Json;
+
+using CSharpBasic.Common;
+
+
+namespace CSharpBasic;
+
 internal class Program
 {
     private static void Main(string[] args)
@@ -116,98 +123,13 @@ internal class Program
         System.Console.WriteLine(_24FromNow);
 
         System.Console.WriteLine(_24FromNow.ToString("yyyy/M/d H:m"));
-         
-    }
+
+        var personSerialized = JsonConvert.SerializeObject(person);
+        System.Console.WriteLine(personSerialized);
 
 
-
-
-}
-
-// SOLID
-// Single Responsibility
-// Open/Close
-// Liskov Substitution
-// Inversion of control
-// Dependency Injection
-
-public class Person : Object // No hace falta ponerlo explicitamente
-{
-    private string name;
-
-    public Person(string birthPlace, string name)
-    {         
-        BirthPlace = birthPlace ?? throw new ArgumentNullException(nameof(birthPlace));
-
-        this.name = name;
-    }    
-
-    public string Name 
-    { 
-        get
-        {
-            return this.name;
-        }
-        set
-        {
-            this.name = value;
-        }
-    }
-
-    public int Age { get; set; }
-
-    public string BirthPlace { get; private set; }
-
-    public override string ToString()
-    {
-        return $"{name}: {Age} -> {BirthPlace}";
+        var jsonObject = JsonConvert.DeserializeObject<Person>("{\"Name\":\"Juan\",\"Age\":3,\"BirthPlace\":\"Madrid\"}");
+        System.Console.WriteLine(jsonObject); 
     }
 }
 
-public class Employee : Person, IEmployee
-{
-    public Employee(string birthPlace, string name) 
-        : this(birthPlace, name, string.Empty)
-    {    }
-
-    public Employee(string birthPlace, string name, string company)
-        : base(birthPlace, name)
-    {
-        Company = company;
-    }
-
-    public string Company { get; set; }
-
-    public double GetPayroll()
-    {
-        return 100;
-    }
-
-    public override string ToString()
-    {
-        return base.ToString() + $" {Company}";
-    }
-}
-
-class DummyClass : IEmployee
-{
-    public double GetPayroll()
-    {
-        return 0;
-    }
-}
-
-public class GenericSample<T> where T : Person, IEmployee
-{
-    public T GetReturnObjectT { get; set; }
-
-    public string GetAverage(T objectToCalculate){
-        var result = $"{objectToCalculate.GetPayroll()} {objectToCalculate.Age}";
-        return result;
-    }
-}
-
-public interface IEmployee
-{
-    double GetPayroll();
-}

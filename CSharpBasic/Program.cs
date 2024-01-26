@@ -146,6 +146,8 @@ internal class Program
         {
             System.Console.WriteLine("al menos una vez");
         } while (false);
+
+        var ageOverload = person.GetAge(3);
     }
 }
 

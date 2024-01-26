@@ -28,6 +28,11 @@ public class Person : Human // No hace falta ponerlo explicitamente
         return Age;
     }
 
+    public int GetAge(int age)
+    {
+        return Age;
+    }
+
     public new string GetName()
     {        
         return Name;

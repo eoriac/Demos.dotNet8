@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 
 using CSharpBasic.Common;
+using System.Runtime.CompilerServices;
 
 
 namespace CSharpBasic;
@@ -130,6 +131,21 @@ internal class Program
 
         var jsonObject = JsonConvert.DeserializeObject<Person>("{\"Name\":\"Juan\",\"Age\":3,\"BirthPlace\":\"Madrid\"}");
         System.Console.WriteLine(jsonObject); 
+
+        var command = string.Empty;
+        while (string.Compare(command, "quit", StringComparison.InvariantCultureIgnoreCase) != 0)
+        {
+            System.Console.WriteLine($"Option: {command}");
+
+            command = Console.ReadLine();
+
+            // no se ejecutan siempre
+        }
+
+        do
+        {
+            System.Console.WriteLine("al menos una vez");
+        } while (false);
     }
 }
 

@@ -7,11 +7,16 @@ builder.Services.ConfigureControllers();
 builder.Services.ConfigureSwagger();
 
 // builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
-// builder.Services.AddSingleton<IWeatherRepository, WeatherRepository>();
 
+// Para que se mantenga en memoria la "DB"
+builder.Services.AddSingleton<IWeatherRepository, WeatherRepository>();
 
-builder.Services.AddSingleton<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+/*
 builder.Services.AddTransient<IWeatherRepository, WeatherRepository>();
+*/
+
 
 var app = builder.Build();
 

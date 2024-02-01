@@ -25,7 +25,9 @@ public static class ServiceExtensions
         services.AddControllers(options =>
         {
             options.ReturnHttpNotAcceptable = true;
-        }).AddXmlDataContractSerializerFormatters();        
+        })
+        .AddNewtonsoftJson()
+        .AddXmlDataContractSerializerFormatters();        
 
         return services;
     }

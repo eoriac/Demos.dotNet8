@@ -148,6 +148,11 @@ internal class Program
         } while (false);
 
         var ageOverload = person.GetAge(3);
+
+
+        var stringToAddDollarSign = "Hola";
+
+        System.Console.WriteLine(stringToAddDollarSign.AddDollarSign());
     }
 }
 

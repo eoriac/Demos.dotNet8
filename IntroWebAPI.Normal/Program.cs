@@ -1,11 +1,17 @@
+using IntroWebAPI.Normal;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.ConfigureControllers();
+builder.Services.ConfigureSwagger();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
+// builder.Services.AddSingleton<IWeatherRepository, WeatherRepository>();
+
+
+builder.Services.AddSingleton<INotificationService, NotificationService>();
+builder.Services.AddTransient<IWeatherRepository, WeatherRepository>();
 
 var app = builder.Build();
 

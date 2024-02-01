@@ -7,27 +7,38 @@ namespace IntroWebAPI.Normal.Controllers;
 [Route("WeatherForecast")]
 public class WeatherForecastController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
     private readonly ILogger<WeatherForecastController> _logger;
+    private readonly IWeatherRepository weatherRepository;
+    private readonly INotificationService notificationService;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, 
+    IWeatherRepository weatherRepository,
+    INotificationService notificationService)
     {
         _logger = logger;
+        this.weatherRepository = weatherRepository;
+        this.notificationService = notificationService;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
     public IEnumerable<WeatherForecast> Get()
+    {       
+        this._logger.LogInformation("Getting weather forecasts");
+
+        this.notificationService.Notify("some message");
+
+        return this.weatherRepository.GetWeatherForecasts();
+    }
+
+    [HttpPost]
+    public IActionResult Post(WeatherForecast weatherForecast)
     {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        })
-        .ToArray();
+        this._logger.LogInformation("Create weather forecast");
+
+        this._logger.LogDebug($"Create Weather Forecast {weatherForecast}");
+
+        this.weatherRepository.AddWeatherForecast(weatherForecast);
+
+        return Ok();
     }
 }

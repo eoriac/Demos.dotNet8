@@ -8,6 +8,9 @@ namespace IntroWebAPI.Normal.Controllers;
 [Route("WeatherForecast")]
 public class WeatherForecastController : ControllerBase
 {
+    // Debería obtenerse de una configuración
+    const int MaxPageSize = 50;
+
     private readonly ILogger<WeatherForecastController> _logger;
     private readonly IWeatherRepository weatherRepository;
     private readonly INotificationService notificationService;
@@ -22,12 +25,85 @@ public class WeatherForecastController : ControllerBase
     }
 
     [HttpGet(Name = "GetWeatherForecasts")]
-    public ActionResult<IEnumerable<WeatherForecast>> Get()
+    public ActionResult<WeatherForecastForCollectionDto> Get(string? location, string? queryPattern, string? orderBy, int pageNumber = 1, int pageSize = 5)
     {       
         //WeatherForecast
-        this._logger.LogInformation("Getting weather forecasts");        
+        this._logger.LogInformation("Getting weather forecasts");
 
-        return Ok(this.weatherRepository.GetWeatherForecasts());
+        // 
+        if (pageSize > MaxPageSize)
+        {
+            // pageSize = MaxPageSize;
+
+            return BadRequest();
+        }
+
+        var weatherResults = this.weatherRepository.GetWeatherForecasts().ToList();
+
+        if (string.IsNullOrWhiteSpace(location) == false)
+        {
+            weatherResults = weatherResults.Where(wt => 
+            {
+                // n instrucciones.
+                return wt.Location == location;
+            }).ToList();
+
+            // weatherResults = this.weatherRepository.GetWeatherForecasts().Where(wt => wt.Location == location).ToList();
+        }
+
+        if (string.IsNullOrWhiteSpace(queryPattern) == false)
+        {
+            weatherResults = weatherResults.Where(wt => 
+            {
+                /*
+                var queryLocation = string.Compare(wt.Location, queryPattern, StringComparison.InvariantCultureIgnoreCase) != 0;
+                var querySummary = string.Compare(wt.Summary, queryPattern, StringComparison.InvariantCultureIgnoreCase) != 0;
+                */
+
+                var queryLocation = wt.Location.Contains(queryPattern, StringComparison.InvariantCultureIgnoreCase);
+                var querySummary = wt.Summary?.Contains(queryPattern, StringComparison.InvariantCultureIgnoreCase) ?? false;
+
+                return queryLocation || querySummary;
+            }).ToList();
+
+            // weatherResults = this.weatherRepository.GetWeatherForecasts().Where(wt => wt.Location == location).ToList();
+        }
+
+        if (string.IsNullOrWhiteSpace(orderBy) == false)
+        {
+            orderBy = orderBy.ToLower();
+
+            weatherResults = weatherResults.OrderBy(wt => 
+            {
+                return orderBy switch
+                {
+                    "temperaturec" => wt.TemperatureC,
+                    "location" => wt.Location,
+                    "date" => wt.Date,
+                    _ => (object)wt.Date,
+                };
+            }).ToList();
+        }
+
+        weatherResults = weatherResults
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .ToList();        
+
+        var results = new WeatherForecastForCollectionDto()
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            // NextPageUrl = 
+            Values = weatherResults
+        };
+
+        Response.Headers.TryAdd("X-PageNumber", pageNumber.ToString());
+        Response.Headers.TryAdd("X-PageSize", pageSize.ToString());
+        Response.Headers.TryAdd("X-NextPage", string.Empty);
+        Response.Headers.TryAdd("X-PreviousPage", string.Empty);
+
+        return Ok(results);
     }
 
     [HttpGet("{id}", Name = "GetWeatherForecast")]

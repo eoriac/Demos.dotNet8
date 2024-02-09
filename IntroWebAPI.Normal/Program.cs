@@ -1,4 +1,6 @@
 using IntroWebAPI.Normal;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,13 +8,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureControllers();
 builder.Services.ConfigureSwagger();
 
-// builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
+
+builder.Services.AddDbContext<WeatherAPIContext>(options => 
+    options.UseSqlite(builder.Configuration.GetConnectionString("DemoDb")));
+
+builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 
 // Para que se mantenga en memoria la "DB"
-builder.Services.AddSingleton<IWeatherRepository, WeatherRepository>();
+// builder.Services.AddSingleton<IWeatherRepository, WeatherRepository>();
 
+#if DEBUG
 builder.Services.AddScoped<INotificationService, NotificationService>();
-
+#else
+builder.Services.AddScoped<INotificationService, NotificationService>();
+#endif
 /*
 builder.Services.AddTransient<IWeatherRepository, WeatherRepository>();
 */

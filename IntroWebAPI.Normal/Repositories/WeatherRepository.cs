@@ -1,8 +1,16 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+
 namespace IntroWebAPI.Normal;
 
 public class WeatherRepository : IWeatherRepository
 {
+
+    public WeatherRepository(WeatherAPIContext dbContext)
+    {
+        this.dbContext = dbContext;
+    }
+
     private readonly Dictionary<Guid, WeatherForecast> weatherForecasts = new()
     {
         {
@@ -29,10 +37,13 @@ public class WeatherRepository : IWeatherRepository
         }
         //, "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
+    private readonly WeatherAPIContext db;
+    private readonly Microsoft.EntityFrameworkCore.DbContext dbContext;
 
     public void AddWeatherForecast(WeatherForecast weatherForecast)
     {
-        this.weatherForecasts.Add(weatherForecast.Id, weatherForecast);
+        this.db.WeatherForecasts.Add(weatherForecast);
+        //this.weatherForecasts.Add(weatherForecast.Id, weatherForecast);
     }
 
     public void Delete(WeatherForecast weatherForecast)
@@ -42,14 +53,18 @@ public class WeatherRepository : IWeatherRepository
 
     public WeatherForecast GetWeatherForecast(Guid id)
     {
-        this.weatherForecasts.TryGetValue(id, out var result);
+
+        var result = this.db.WeatherForecasts.FirstOrDefault(wf => wf.Id == id);
+        //this.weatherForecasts.TryGetValue(id, out var result);
 
         return result;
     }
 
     public IList<WeatherForecast> GetWeatherForecasts()
     {
-        return this.weatherForecasts.Values.ToList();
+        return this.db.WeatherForecasts.Skip(20).Take(20).OrderBy(wf => wf.TemperatureC).ToList();
+
+        //return this.weatherForecasts.Values.ToList();
     }
 
     public void UpdateWeatherForecast(WeatherForecast weatherForecastEntity)
